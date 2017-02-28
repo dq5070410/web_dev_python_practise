@@ -91,3 +91,24 @@ class RequestHander(object):
 	@corotine.asyncio
 	def __call__(self,request):
 		kw = None
+		if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
+			if request.method == 'POST':
+				if not request.content_type:
+					return web.HTTPBadRequest('Missing Content-Type')
+				ct = request.content_type.lower()
+				if ct.startwith('application/json'):
+					params = yield from request.json()
+					if not isinstance(params,dict):
+						return web.HTTPBadRequest('JSON body must be object.')
+					kw = params
+				elif ct.startwith('application/x-www-form-urlencoded') or ct.startwith('multipart/form-data'):
+					params = yield from request.post()
+					kw = dict(**params)
+				else:
+					return web.HTTPBadRequest('Unsupported Content-Type:%s' % request.content_type)
+			if request.method == 'GET':
+				qs = request.query_string
+				if qs:
+					kw = dict()
+					for k,v in parse.parse_qs(qs,True).items():
+						kw[k] = v[0]
