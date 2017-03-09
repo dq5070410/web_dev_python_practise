@@ -116,8 +116,6 @@ def datetime_filter(t):
     dt = datetime.fromtimestamp(t)
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
-def index(request):
-    return web.Response(body=b'<h1>Awesome</h1>',content_type='text/html')
 
 @asyncio.coroutine
 def init(loop):
