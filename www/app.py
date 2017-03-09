@@ -41,6 +41,29 @@ def init_jinja2(app,**kw):
 			env.filters[name] = f
 	app['__templating__'] = env 
 
+@asyncio.coroutine
+def logger_factory(app,handler):
+	@asyncio.coroutine
+	def logger(request):
+		logging.info('Request:%s %s '% (request.method,request.path))
+		return (yield from handler(request))
+		return logger 
+
+@asyncio.coroutine
+def data_factory(app,handler):
+	@asyncio.coroutine
+	def parse_data(request):
+		if request.method == "POST":
+			if request.content_type.startwith('application/json'):
+				request.__data__ = yield from request.json()
+				logging.info('request json:%s' % str(request.__data__))
+			elif request.content_type.startwith('application/x-www-form-urlencoded'):
+				request.__data__ = yield from request.post()
+				logging.info('request form :%s' % str(request.__data__))
+			return (yield from handler(request))
+	return parse_data
+
+
 def index(request):
     return web.Response(body=b'<h1>Awesome</h1>',content_type='text/html')
 
