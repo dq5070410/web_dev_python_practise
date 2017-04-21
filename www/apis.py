@@ -12,7 +12,7 @@ class APIError(Exception):
 	'''
 	the base API error which contains error(requred),data(optional),and message(optional)
 	'''
-	def __inin__(self,error,data='',message=''):
+	def __init__(self,error,data='',message=''):
 		super(APIError,self).__init__(message)
 		self.error = error
 		self.data = data
