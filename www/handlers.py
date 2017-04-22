@@ -79,6 +79,19 @@ def index(request):
 		'blogs':blogs
 	}
 
+@get('/blog/{id}')
+def get_blog(id):
+	blog = yield from Blog.find(id)
+	comments = yield from Comment.findAll('blog_id=?',[id],orderBy='created_at desc')
+	for c in comments:
+		c.html_content = text2html(c.content)
+	blog.html_content = markdown2.markdown(blog.content)
+	return {
+		'__template__':'blog.html',
+		'blog':blog,
+		'comments':comments
+	}
+
 @get("/register")
 def register():
 	return {
@@ -121,6 +134,14 @@ def signout(request):
     r.set_cookie(COOKIE_NAME, '-deleted-', max_age=0, httponly=True)
     logging.info('user signed out.')
     return r
+
+ @get('/manage/blogs/create')
+ def manage_create_blog():
+ 	return {
+ 		'__template__':'manage_blog_edit.html',
+ 		'id':'',
+ 		'action':'/api/blogs'
+ 	}
 
 _RE_EMAIL = re.compile(r'^[a-z0-9\.\-\_]+\@[a-z0-9\-\_]+(\.[a-z0-9\-\_]+){1,4}$')
 _RE_SHA1 = re.compile(r'^[0-9a-f]{40}$')
