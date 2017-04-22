@@ -16,6 +16,20 @@ from config import configs
 COOKIE_NAME = "awesession"
 _COOKIE_KEY = configs.session.secret
 
+def check_admin(request):
+	if request.__user__ is None or not request.__user__.admin:
+		raise APIPermissionError()
+
+def get_page_index(page_str):
+	p = 1
+	try:
+		p = int(page_str)
+	except ValueError as e:
+		pass
+	if p < 1:
+		p = 1
+	return p
+
 def user2cookie(user,max_age):
 	'''
 	Generate cookie str by user
