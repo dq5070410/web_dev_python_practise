@@ -135,6 +135,13 @@ def signout(request):
     logging.info('user signed out.')
     return r
 
+@get('/manage/blogs')
+def manage_blogs(*, page='1'):
+    return {
+        '__template__': 'manage_blogs.html',
+        'page_index': get_page_index(page)
+    }
+
  @get('/manage/blogs/create')
  def manage_create_blog():
  	return {
