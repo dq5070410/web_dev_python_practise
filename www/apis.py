@@ -12,7 +12,7 @@ class Page(object):
 	'''
 	Page object for display pages.
 	'''
-	def __init__(self,item_count,page_index=1,page_size=0):
+	def __init__(self,item_count,page_index=1,page_size=10):
 		self.item_count = item_count
 		self.page_size = page_size
 		self.page_count = item_count // page_size + (1 if item_count % page_size > 0 else 0)
