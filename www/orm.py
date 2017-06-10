@@ -72,6 +72,7 @@ class Field(object):
 class StringField(Field):
 	def __init__(self,name=Node,primary_key=False,default=Node,ddl='varchar(100)'):
 		super().__init__(name,ddl,primary_key,default)
+
 class BooleanField(Field):
 	def __init__(self,name=Node,default=False):
 		super().__init__(name,'boolean',False,default)
@@ -79,6 +80,7 @@ class BooleanField(Field):
 class IntegerField(Field):
 	def __init__(self,name=None,primary_key=False,default=0):
 		super().__init__(name,'bigint',primary_key,default)
+
 class FloatField(Field):
 	def __init__(self,name=None,primary_key=False,default=0.0):
 		super().__init__(name,'real',primary_key,default)
@@ -124,13 +126,16 @@ class ModelMetaclass(type):
 class Model(dict,metaclass=ModelMetaclass):
 	def __init__(self,**kw):
 		super(Model,self).__init__(**kw)
+
 	def __getattr__(self,key):
 		try:
 			return self[key]
 		except KeyError:
 			raise AttributeError(r"'Model' object has no attribute '%s'" % key)
+
 	def __setattr__(self,key,value):
 		self[key] = value
+
 	def getValueOrDefault(self,key):
 		value = getattr(self,key,None)
 		if value is None:
@@ -140,6 +145,7 @@ class Model(dict,metaclass=ModelMetaclass):
 				logging.debug('using default value for %s:%s' % (key,str(value)))
 				setattr(self,key,value)
 		return value
+		
 	@classmethod
 	@asyncio.coroutine
 	def findAll(cls,where=None,args=None,**kw):
